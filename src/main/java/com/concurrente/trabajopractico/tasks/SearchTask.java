@@ -13,14 +13,12 @@ import org.springframework.util.StopWatch;
 import com.concurrente.trabajopractico.model.FileResult;
 
 public class SearchTask extends RecursiveTask<List<FileResult>> {
-  //SUB TASK - SLAVE
 
   private static final long serialVersionUID = 1L;
   private final List<Path> filesPaths;
   private final String keyword;
 
   private static final int THRESHOLD = 8;
- 
 
   public SearchTask(List<Path> filesPaths, String keyword) {
     this.filesPaths = filesPaths;
@@ -33,26 +31,27 @@ public class SearchTask extends RecursiveTask<List<FileResult>> {
     int numberOfProcessors = Runtime.getRuntime().availableProcessors();
     int numberOfFiles = this.filesPaths.size();
 
-    if (numberOfFiles < THRESHOLD){
+    if (numberOfFiles < THRESHOLD) {
       return processFiles(this.filesPaths);
-    }else{
+    } else {
       List<FileResult> fileResults = new ArrayList<FileResult>();
 
       List<SearchTask> tasks = createSubtasks(numberOfProcessors, numberOfFiles);
       for (SearchTask task : tasks) {
-          task.fork(); //arranges to asynchronously execute this task in the pool the current task is running in
+        task.fork(); // arranges to asynchronously execute this task in the pool the current task is
+                     // running in
       }
 
       for (SearchTask task : tasks) {
-          fileResults.addAll(task.join()); //returns the result of the computation when it is done
+        fileResults.addAll(task.join()); // returns the result of the computation when it is done
       }
       return fileResults;
     }
 
   }
 
-  private List<FileResult> processFiles(List<Path> partition){
-    
+  private List<FileResult> processFiles(List<Path> partition) {
+
     List<FileResult> fileResultsList = new ArrayList<>();
 
     for (Path path : partition) {
@@ -71,10 +70,10 @@ public class SearchTask extends RecursiveTask<List<FileResult>> {
 
         while ((line = bufferedReader.readLine()) != null) {
           String[] words = line.split("[\\s\\p{Punct}]+");
-          String regex = "(?i)\\b" + keyword + "\\b"; 
-          for (String word : words){
-              if (word.matches(regex))
-                  counter++;
+          String regex = "(?i)\\b" + keyword + "\\b";
+          for (String word : words) {
+            if (word.matches(regex))
+              counter++;
           }
         }
         bufferedReader.close();
@@ -95,14 +94,14 @@ public class SearchTask extends RecursiveTask<List<FileResult>> {
     return fileResultsList;
   }
 
-  private List<SearchTask> createSubtasks(int numberOfProcessors, int numberOfFiles){
+  private List<SearchTask> createSubtasks(int numberOfProcessors, int numberOfFiles) {
 
-    List<SearchTask> subTasksList = new ArrayList<SearchTask>();  
+    List<SearchTask> subTasksList = new ArrayList<SearchTask>();
 
-    int partitionSize = (int) Math.ceil((double)numberOfFiles/numberOfProcessors);
-    for (int i = 0; i < numberOfFiles; i += partitionSize){
-        List<Path> partition = filesPaths.subList(i, Math.min(i+partitionSize, numberOfFiles));
-        subTasksList.add(new SearchTask(partition, keyword));
+    int partitionSize = (int) Math.ceil((double) numberOfFiles / numberOfProcessors);
+    for (int i = 0; i < numberOfFiles; i += partitionSize) {
+      List<Path> partition = filesPaths.subList(i, Math.min(i + partitionSize, numberOfFiles));
+      subTasksList.add(new SearchTask(partition, keyword));
     }
 
     return subTasksList;

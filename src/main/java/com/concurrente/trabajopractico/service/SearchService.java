@@ -6,6 +6,6 @@ import java.util.List;
 import com.concurrente.trabajopractico.model.FileResult;
 
 public interface SearchService {
-    
+
     List<FileResult> searchInDocuments(String keyword) throws IOException;
 }

@@ -13,8 +13,8 @@ public class StartWebApplication extends SpringBootServletInitializer {
     }
 
     @Override
-	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-		return application.sources(SpringApplication.class);
-	}
+    protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+        return application.sources(SpringApplication.class);
+    }
 
 }

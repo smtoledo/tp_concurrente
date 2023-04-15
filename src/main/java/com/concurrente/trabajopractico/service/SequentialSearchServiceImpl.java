@@ -19,23 +19,23 @@ import org.springframework.util.StopWatch;
 import com.concurrente.trabajopractico.model.FileResult;
 
 @Service("sequentialService")
-public class SequentialSearchServiceImpl implements SequentialSearchService{
+public class SequentialSearchServiceImpl implements SequentialSearchService {
 
     @Value("${documents.path}")
     private String documentsPath;
 
     @Override
     public List<FileResult> searchInDocuments(String keyword) throws IOException {
-        
+
         List<File> filesInFolder = Files.walk(Paths.get(documentsPath))
-                                .filter(Files::isRegularFile)
-                                .map(Path::toFile)
-                                .collect(Collectors.toList());
+                .filter(Files::isRegularFile)
+                .map(Path::toFile)
+                .collect(Collectors.toList());
 
         List<FileResult> fileResultsList = new ArrayList<>();
 
-        for (File file : filesInFolder){
-            try{
+        for (File file : filesInFolder) {
+            try {
                 int counter = 0;
 
                 StopWatch watch = new StopWatch();
@@ -45,16 +45,16 @@ public class SequentialSearchServiceImpl implements SequentialSearchService{
                 BufferedReader bufferedReader = new BufferedReader(fileReader);
                 String line = "";
 
-                while ((line = bufferedReader.readLine()) != null){
+                while ((line = bufferedReader.readLine()) != null) {
                     String[] words = line.split("[\\s\\p{Punct}]+");
-                    String regex = "(?i)\\b" + keyword + "\\b"; 
-                    for (String word : words){
+                    String regex = "(?i)\\b" + keyword + "\\b";
+                    for (String word : words) {
                         if (word.matches(regex))
                             counter++;
                     }
                 }
                 bufferedReader.close();
-                
+
                 watch.stop();
 
                 FileResult fileResult = new FileResult();
@@ -62,11 +62,10 @@ public class SequentialSearchServiceImpl implements SequentialSearchService{
                 fileResult.setOcurrencies(counter);
                 fileResult.setSearchTime(watch.getTotalTimeSeconds());
                 fileResultsList.add(fileResult);
-            } 
-            catch(Exception e) {
-              System.out.print("\n\t Error processing file : "+file.getName());
+            } catch (Exception e) {
+                System.out.print("\n\t Error processing file : " + file.getName());
             }
-        
+
         }
 
         return fileResultsList;

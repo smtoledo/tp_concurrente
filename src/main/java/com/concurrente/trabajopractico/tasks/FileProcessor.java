@@ -34,49 +34,47 @@ public class FileProcessor extends RecursiveTask<List<FileResult>> {
   protected List<FileResult> compute() {
 
     List<FileResult> fileResultsList = new ArrayList<>();
-    
+
     List<File> filesInFolder;
     try {
       filesInFolder = Files.walk(Paths.get(path))
-              .filter(Files::isRegularFile)
-              .map(Path::toFile)
-              .collect(Collectors.toList());
+          .filter(Files::isRegularFile)
+          .map(Path::toFile)
+          .collect(Collectors.toList());
 
+      for (File file : filesInFolder) {
+        if (checkFile(file.getName())) {
+          try {
+            int counter = 0;
 
-      for (File file : filesInFolder){
-        if (checkFile(file.getName())){
-          try{
-              int counter = 0;
+            StopWatch watch = new StopWatch();
+            watch.start();
 
-              StopWatch watch = new StopWatch();
-              watch.start();
-                           
-              FileReader fileReader = new FileReader(file);
-              BufferedReader bufferedReader = new BufferedReader(fileReader);
+            FileReader fileReader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
 
-              String line = "";
-              while ((line = bufferedReader.readLine()) != null){
-                  //String[] words = line.split("\\s+"); //remover comas y puntos y signos
-                  String[] words = line.split("[\\s\\p{Punct}]+");
-                  String regex = "(?i)\\b" + keyword + "\\b";
-                  for (String word : words){
-                      //if (word.equalsIgnoreCase(keyword))
-                      if (word.matches(regex))
-                          counter++;
-                  }
+            String line = "";
+            while ((line = bufferedReader.readLine()) != null) {
+              // String[] words = line.split("\\s+"); //remover comas y puntos y signos
+              String[] words = line.split("[\\s\\p{Punct}]+");
+              String regex = "(?i)\\b" + keyword + "\\b";
+              for (String word : words) {
+                // if (word.equalsIgnoreCase(keyword))
+                if (word.matches(regex))
+                  counter++;
               }
-              bufferedReader.close();
-              
-              watch.stop();
+            }
+            bufferedReader.close();
 
-              FileResult fileResult = new FileResult();
-              fileResult.setDocumentName(file.getName());
-              fileResult.setOcurrencies(counter);
-              fileResult.setSearchTime(watch.getTotalTimeSeconds());
-              fileResultsList.add(fileResult);
-          } 
-          catch(Exception e) {
-            System.out.print("\n\t Error processing file : "+file.getName());
+            watch.stop();
+
+            FileResult fileResult = new FileResult();
+            fileResult.setDocumentName(file.getName());
+            fileResult.setOcurrencies(counter);
+            fileResult.setSearchTime(watch.getTotalTimeSeconds());
+            fileResultsList.add(fileResult);
+          } catch (Exception e) {
+            System.out.print("\n\t Error processing file : " + file.getName());
           }
         }
       }
