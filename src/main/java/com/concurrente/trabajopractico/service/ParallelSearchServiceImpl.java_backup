@@ -1,0 +1,55 @@
+package com.concurrente.trabajopractico.service;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.TimeUnit;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import com.concurrente.trabajopractico.model.FileResult;
+import com.concurrente.trabajopractico.tasks.FileProcessor;
+
+@Service("parallelService")
+public class ParallelSearchServiceImpl implements ParallelSearchService{
+
+    @Value("${documents.path}")
+    private String documentsPath;
+
+    @Override
+    public List<FileResult> searchInDocuments(String keyword) throws IOException {
+        
+        int numberOfProcessors = Runtime.getRuntime().availableProcessors();
+
+        ForkJoinPool pool = new ForkJoinPool(numberOfProcessors);
+
+        FileProcessor processor_1 = new FileProcessor(documentsPath, "_1.txt", keyword);
+        FileProcessor processor_2 = new FileProcessor(documentsPath, "_2.txt", keyword);
+
+        pool.execute(processor_1);
+        pool.execute(processor_2);
+
+        do {
+            System.out.printf("******************************************\n");
+            System.out.printf("Main: Parallelism: %d\n", pool.getParallelism());
+            System.out.printf("Main: Active Threads: %d\n", pool.getActiveThreadCount());
+            System.out.printf("Main: Task Count: %d\n", pool.getQueuedTaskCount());
+            System.out.printf("Main: Steal Count: %d\n", pool.getStealCount());
+            System.out.printf("******************************************\n");
+            try {
+              TimeUnit.SECONDS.sleep(1);
+            } catch (InterruptedException e) {
+              e.printStackTrace();
+            }
+          } while ((!processor_1.isDone()) || (!processor_2.isDone()) /**|| (!processor_3.isDone())*/);
+      
+          pool.shutdown();
+      
+          List<FileResult> fileResults = new ArrayList<FileResult>();
+          fileResults.addAll(processor_1.join());
+          fileResults.addAll(processor_2.join());
+
+        return fileResults;
+    }
+
+}
