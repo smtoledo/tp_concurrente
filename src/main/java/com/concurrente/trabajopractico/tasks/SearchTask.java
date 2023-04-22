@@ -10,9 +10,9 @@ import java.util.concurrent.RecursiveTask;
 
 import org.springframework.util.StopWatch;
 
-import com.concurrente.trabajopractico.model.FileResult;
+import com.concurrente.trabajopractico.model.*;
 
-public class SearchTask extends RecursiveTask<List<FileResult>> {
+public class SearchTask extends RecursiveTask<List<WorkerResult>> {
 
   private static final long serialVersionUID = 1L;
   private final List<Path> filesPaths;
@@ -26,7 +26,7 @@ public class SearchTask extends RecursiveTask<List<FileResult>> {
   }
 
   @Override
-  protected List<FileResult> compute() {
+  protected List<WorkerResult> compute() {
 
     int numberOfProcessors = Runtime.getRuntime().availableProcessors();
     int numberOfFiles = this.filesPaths.size();
@@ -34,7 +34,7 @@ public class SearchTask extends RecursiveTask<List<FileResult>> {
     if (numberOfFiles < THRESHOLD) {
       return processFiles(this.filesPaths);
     } else {
-      List<FileResult> fileResults = new ArrayList<FileResult>();
+      List<WorkerResult> workersResults = new ArrayList<WorkerResult>();
 
       List<SearchTask> tasks = createSubtasks(numberOfProcessors, numberOfFiles);
       for (SearchTask task : tasks) {
@@ -43,16 +43,20 @@ public class SearchTask extends RecursiveTask<List<FileResult>> {
       }
 
       for (SearchTask task : tasks) {
-        fileResults.addAll(task.join()); // returns the result of the computation when it is done
+        workersResults.addAll(task.join()); // returns the result of the computation when it is done
       }
-      return fileResults;
+      return workersResults;
     }
 
   }
 
-  private List<FileResult> processFiles(List<Path> partition) {
+  private List<WorkerResult> processFiles(List<Path> partition) {
 
-    List<FileResult> fileResultsList = new ArrayList<>();
+    WorkerResult workerResult = new WorkerResult();
+    workerResult.setWorkerId(Thread.currentThread().getName());
+
+    StopWatch worker_watch = new StopWatch();
+    worker_watch.start();
 
     for (Path path : partition) {
 
@@ -84,14 +88,21 @@ public class SearchTask extends RecursiveTask<List<FileResult>> {
         fileResult.setDocumentName(file.getName());
         fileResult.setOcurrencies(counter);
         fileResult.setSearchTime(watch.getTotalTimeSeconds());
-        fileResultsList.add(fileResult);
+
+        workerResult.addFilesSearch(fileResult);
 
       } catch (Exception e) {
         System.out.print("\n\t Error processing file : " + file.getName());
       }
     }
 
-    return fileResultsList;
+    worker_watch.stop();
+    workerResult.setSearchTime(worker_watch.getTotalTimeSeconds());
+
+    List<WorkerResult> workerlist = new ArrayList<>();
+    workerlist.add(workerResult);
+
+    return workerlist;
   }
 
   private List<SearchTask> createSubtasks(int numberOfProcessors, int numberOfFiles) {

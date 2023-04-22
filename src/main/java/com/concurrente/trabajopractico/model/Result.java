@@ -5,10 +5,8 @@ import java.util.List;
 public class Result {
 
     private long id;
-    private String workerId;
-    private Integer keywordsFound;
-    private List<String> documentsAL10kw;
-    private List<FileResult> filesResults;
+    private List<WorkerResult> workersResult;
+    private double totalSearchTime;
 
     public Result() {
     }
@@ -21,36 +19,20 @@ public class Result {
         this.id = id;
     }
 
-    public String getWorkerId() {
-        return workerId;
+    public List<WorkerResult> getWorkersResult() {
+        return workersResult;
     }
 
-    public void setWorkerId(String workerId) {
-        this.workerId = workerId;
+    public void setWorkersResult(List<WorkerResult> workersResult) {
+        this.workersResult = workersResult;
     }
 
-    public Integer getKeywordsFound() {
-        return keywordsFound;
+    public double getTotalSearchTime() {
+        return totalSearchTime;
     }
 
-    public void setKeywordsFound(Integer keywordsFound) {
-        this.keywordsFound = keywordsFound;
-    }
-
-    public List<String> getDocumentsAL10kw() {
-        return documentsAL10kw;
-    }
-
-    public void setDocumentsAL10kw(List<String> documentsAL10kw) {
-        this.documentsAL10kw = documentsAL10kw;
-    }
-
-    public List<FileResult> getFilesResults() {
-        return filesResults;
-    }
-
-    public void setFilesResults(List<FileResult> filesResults) {
-        this.filesResults = filesResults;
+    public void setTotalSearchTime(double totalSearchTime) {
+        this.totalSearchTime = totalSearchTime;
     }
 
 }

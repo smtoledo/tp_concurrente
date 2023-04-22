@@ -74,8 +74,19 @@
                     <div class="tablecontainer">
                         <div class="col-xs-6">
                             <h2 class="sub-header">Sequential Search</h2>
+
+                            <div>
+                                <ul style="font-size: initial;">
+                                    <li><b>Thread name:</b> {{ctrl.seq_result.workersResult[0].workerId}}</li>
+                                    <li><b>Thread search time:</b> {{ctrl.seq_result.workersResult[0].searchTime}} sec.
+                                    </li>
+                                    <li><b>Total search time:</b> {{ctrl.seq_result.totalSearchTime}} sec.</li>
+                                </ul>
+                            </div>
+
                             <div class="table-responsive">
-                                <table class="table table-striped">
+                                <label for="table10minus">Files -10 Result</label>
+                                <table name="table10minus" class="table table-striped">
                                     <thead>
                                         <tr>
                                             <th class="col-md-1">File Name</th>
@@ -84,7 +95,24 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr ng-repeat="r in ctrl.seq_result">
+                                        <tr ng-repeat="r in ctrl.seq_result.workersResult[0].filesSearch">
+                                            <td class="col-md-1"><span ng-bind="r.documentName"></span></td>
+                                            <td class="col-md-2"><span ng-bind="r.ocurrencies"></span></td>
+                                            <td class="col-md-3"><span ng-bind="r.searchTime.toFixed(5)"></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                <label for="table10plus">Files 10+ Result</label>
+                                <table name="table10plus" class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-md-1">File Name</th>
+                                            <th class="col-md-2">Keyword Count</th>
+                                            <th class="col-md-3">Time (Sec.)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr ng-repeat="r in ctrl.seq_result.workersResult[0].filesSearch10plus">
                                             <td class="col-md-1"><span ng-bind="r.documentName"></span></td>
                                             <td class="col-md-2"><span ng-bind="r.ocurrencies"></span></td>
                                             <td class="col-md-3"><span ng-bind="r.searchTime.toFixed(5)"></span></td>
@@ -93,22 +121,59 @@
                                 </table>
                             </div>
                         </div>
+
                         <div class="col-xs-6">
                             <h2 class="sub-header">Parallel Search</h2>
+
+                            <div>
+                                <ul style="font-size: initial;">
+                                    <li><b>Total search time:</b> {{ctrl.par_result.totalSearchTime}} sec.</li>
+                                </ul>
+                            </div>
+
                             <div class="table-responsive">
-                                <table class="table table-striped">
+                                <table class="table table-striped table-datatable table-hover table-border-bottom">
                                     <thead>
                                         <tr>
-                                            <th class="col-md-1">File Name</th>
-                                            <th class="col-md-2">Keyword Count</th>
-                                            <th class="col-md-3">Time (Sec.)</th>
+                                            <th class="col-md-1">Worker Name</th>
+                                            <th class="col-md-2">Search Time</th>
+                                            <th class="col-md-1"></th>
+                                            <th class="col-md-3">File Name</th>
+                                            <th class="col-md-1">Keyword Count</th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr ng-repeat="s in ctrl.par_result">
-                                            <td class="col-md-1"><span ng-bind="s.documentName"></span></td>
-                                            <td class="col-md-2"><span ng-bind="s.ocurrencies"></span></td>
-                                            <td class="col-md-3"><span ng-bind="s.searchTime.toFixed(5)"></span></td>
+                                        <tr ng-repeat-start="w in ctrl.par_result.workersResult">
+                                            <td class="col-md-1"><span ng-bind="w.workerId"></span></td>
+                                            <td class="col-md-2"><span ng-bind="w.searchTime"></span></td>
+                                            <td>&nbsp;</td>
+                                            <td colspan="2">&nbsp;</td>
+                                        </tr>
+                                        <tr ng-repeat="f in w.filesSearch">
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td class="col-md-3"><span ng-bind="f.documentName"></span></td>
+                                            <td class="col-md-1"><span ng-bind="f.ocurrencies"></span></td>
+
+                                        </tr>
+                                        <tr ng-show="w.filesSearch10plus.length > 0">
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td colspan="3"><strong>Files 10+ Result</strong></td>
+                                        </tr>
+                                        <tr ng-repeat="f in w.filesSearch10plus">
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td class="col-md-3"><span ng-bind="f.documentName"></span></td>
+                                            <td class="col-md-1"><span ng-bind="f.ocurrencies"></span></td>
+
+                                        </tr>
+                                        <tr ng-repeat-end>
+                                            <td>&nbsp;</td>
+                                            <td>&nbsp;</td>
+                                            <td colspan="3">&nbsp;</td>
                                         </tr>
                                     </tbody>
                                 </table>
