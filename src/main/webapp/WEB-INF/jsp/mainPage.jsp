@@ -181,7 +181,7 @@
                         </div>
                     </div>
 
-                    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.4/angular.js"></script>
+                    <script src="<c:url value='js/angular.js' />"></script>
                     <script src="<c:url value='js/app.js' />"></script>
                     <script src="<c:url value='js/service/main_service.js' />"></script>
                     <script src="<c:url value='js/controller/main_controller.js' />"></script>

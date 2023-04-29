@@ -18,6 +18,9 @@ public class SearchController {
     @Autowired
     ParallelSearchService parallelService;
 
+    @Autowired
+    ParallelSearchMSService parallelMSService;
+
     @GetMapping("/find_sequencially/{keyword}")
     public Result find_sequencially(@PathVariable("keyword") String keyword) {
         try {
@@ -35,4 +38,14 @@ public class SearchController {
             return null;
         }
     }
+
+    @GetMapping("/find_in_parallel_ms/{keyword}")
+    public Result find_in_parallel_ms(@PathVariable("keyword") String keyword) {
+        try {
+            return parallelMSService.searchInDocuments(keyword);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
 }

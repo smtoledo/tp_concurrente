@@ -22,6 +22,10 @@ public class ParallelSearchServiceImpl implements ParallelSearchService {
     @Value("${documents.path}")
     private String documentsPath;
 
+    @Value("${parallelism}")
+    private int parallelism;
+
+
     @Override
     public Result searchInDocuments(String keyword) throws IOException {
 
@@ -42,14 +46,9 @@ public class ParallelSearchServiceImpl implements ParallelSearchService {
 
         List<WorkerResult> workerResultlist = new ArrayList<>();
 
-        ForkJoinPool pool = ForkJoinPool.commonPool();
-
-        // System.out.println("Total number of active threads before invoking: " +
-        // pool.getActiveThreadCount());
+        ForkJoinPool pool = new ForkJoinPool(parallelism);
 
         workerResultlist = pool.invoke(new SearchTask(filesInFolder, keyword));
-
-        // iterar fileResults y sacar documentos con mas de 10 ocurrencias
 
         result.setWorkersResult(workerResultlist);
         

@@ -10,48 +10,22 @@ import java.util.concurrent.RecursiveTask;
 
 import org.springframework.util.StopWatch;
 
-import com.concurrente.trabajopractico.model.*;
+import com.concurrente.trabajopractico.model.FileResult;
+import com.concurrente.trabajopractico.model.WorkerResult;
 
-public class SearchTask extends RecursiveTask<List<WorkerResult>> {
+public class FileSearchTask extends RecursiveTask<List<WorkerResult>> {
 
   private static final long serialVersionUID = 1L;
-  private final List<Path> filesPaths;
+  private final List<Path> partition;
   private final String keyword;
-  private int parallelism;
 
-  private static final int THRESHOLD = 100;
-
-  public SearchTask(List<Path> filesPaths, String keyword) {
-    this.filesPaths = filesPaths;
+  public FileSearchTask(List<Path> partition, String keyword) {
+    this.partition = partition;
     this.keyword = keyword;
   }
 
   @Override
   protected List<WorkerResult> compute() {
-
-    int numberOfProcessors = Runtime.getRuntime().availableProcessors();
-    int numberOfFiles = this.filesPaths.size();
-
-    if (numberOfFiles < THRESHOLD) {
-      System.out.println("available processors: "+numberOfProcessors+" / number of files: "+numberOfFiles);
-      return processFiles(this.filesPaths);
-    } else {
-      List<WorkerResult> workersResults = new ArrayList<WorkerResult>();
-
-      List<SearchTask> tasks = createSubtasks(numberOfProcessors, numberOfFiles);
-      for (SearchTask task : tasks) {
-        task.fork();
-      }
-
-      for (SearchTask task : tasks) {
-        workersResults.addAll(task.join());
-      }
-      return workersResults;
-    }
-
-  }
-
-  private List<WorkerResult> processFiles(List<Path> partition) {
 
     WorkerResult workerResult = new WorkerResult();
     workerResult.setWorkerId(Thread.currentThread().getName());
@@ -106,16 +80,4 @@ public class SearchTask extends RecursiveTask<List<WorkerResult>> {
     return workerlist;
   }
 
-  private List<SearchTask> createSubtasks(int numberOfProcessors, int numberOfFiles) {
-
-    List<SearchTask> subTasksList = new ArrayList<SearchTask>();
-
-    int partitionSize = (int) Math.ceil((double) numberOfFiles / numberOfProcessors);
-    for (int i = 0; i < numberOfFiles; i += partitionSize) {
-      List<Path> partition = filesPaths.subList(i, Math.min(i + partitionSize, numberOfFiles));
-      subTasksList.add(new SearchTask(partition, keyword));
-    }
-
-    return subTasksList;
-  }
 }

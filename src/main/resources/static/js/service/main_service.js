@@ -29,6 +29,20 @@ App.factory('MainService', ['$http', '$q', function($http, $q){
 									}
 							);
 			},
+
+			find_in_parallel_ms: function(keyword) {
+				return $http.get('http://localhost:8080/find_in_parallel_ms/'+keyword)
+						.then(
+								function(response){
+									return response.data;
+								}, 
+								function(errResponse){
+									console.error('Error while fetching users');
+									return $q.reject(errResponse);
+								}
+						);
+			},
+
 	};
 
 }]);
