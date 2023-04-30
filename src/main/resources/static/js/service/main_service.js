@@ -6,6 +6,7 @@ App.factory('MainService', ['$http', '$q', function($http, $q){
 		
             find_sequencially: function(keyword) {
 					return $http.get('http://localhost:8080/find_sequencially/'+keyword)
+					//return $http.get('http://localhost:8080/trabajo-practico-pc/find_sequencially/'+keyword)
 							.then(
 									function(response){
 										return response.data;
@@ -19,6 +20,7 @@ App.factory('MainService', ['$http', '$q', function($http, $q){
 
 		    find_in_parallel: function(keyword) {
 					return $http.get('http://localhost:8080/find_in_parallel/'+keyword)
+					//return $http.get('http://localhost:8080/trabajo-practico-pc/find_in_parallel/'+keyword)
 							.then(
 									function(response){
 										return response.data;
@@ -32,6 +34,7 @@ App.factory('MainService', ['$http', '$q', function($http, $q){
 
 			find_in_parallel_ms: function(keyword) {
 				return $http.get('http://localhost:8080/find_in_parallel_ms/'+keyword)
+				//return $http.get('http://localhost:8080/trabajo-practico-pc/find_in_parallel_ms/'+keyword)
 						.then(
 								function(response){
 									return response.data;

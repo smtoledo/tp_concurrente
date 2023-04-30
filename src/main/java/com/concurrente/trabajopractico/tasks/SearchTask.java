@@ -17,8 +17,6 @@ public class SearchTask extends RecursiveTask<List<WorkerResult>> {
   private static final long serialVersionUID = 1L;
   private final List<Path> filesPaths;
   private final String keyword;
-  private int parallelism;
-
   private static final int THRESHOLD = 100;
 
   public SearchTask(List<Path> filesPaths, String keyword) {
