@@ -17,11 +17,12 @@ public class SearchTask extends RecursiveTask<List<WorkerResult>> {
   private static final long serialVersionUID = 1L;
   private final List<Path> filesPaths;
   private final String keyword;
-  private static final int THRESHOLD = 100;
+  private final int THRESHOLD;
 
-  public SearchTask(List<Path> filesPaths, String keyword) {
+  public SearchTask(List<Path> filesPaths, String keyword, int threshold) {
     this.filesPaths = filesPaths;
     this.keyword = keyword;
+    this.THRESHOLD = threshold;
   }
 
   @Override
@@ -111,7 +112,7 @@ public class SearchTask extends RecursiveTask<List<WorkerResult>> {
     int partitionSize = (int) Math.ceil((double) numberOfFiles / numberOfProcessors);
     for (int i = 0; i < numberOfFiles; i += partitionSize) {
       List<Path> partition = filesPaths.subList(i, Math.min(i + partitionSize, numberOfFiles));
-      subTasksList.add(new SearchTask(partition, keyword));
+      subTasksList.add(new SearchTask(partition, keyword, THRESHOLD));
     }
 
     return subTasksList;

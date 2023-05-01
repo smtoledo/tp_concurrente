@@ -25,6 +25,8 @@ public class ParallelSearchServiceImpl implements ParallelSearchService {
     @Value("${parallelism}")
     private int parallelism;
 
+    @Value("${threshold}")
+    private int threshold;
 
     @Override
     public Result searchInDocuments(String keyword) throws IOException {
@@ -48,7 +50,7 @@ public class ParallelSearchServiceImpl implements ParallelSearchService {
 
         ForkJoinPool pool = new ForkJoinPool(parallelism);
 
-        workerResultlist = pool.invoke(new SearchTask(filesInFolder, keyword));
+        workerResultlist = pool.invoke(new SearchTask(filesInFolder, keyword, threshold));
 
         result.setWorkersResult(workerResultlist);
         
